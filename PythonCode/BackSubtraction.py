@@ -10,7 +10,7 @@ class FGExtraction:
         bgdModel = np.zeros((1,65), np.float64)
         fgdModel = np.zeros((1,65), np.float64)
 
-        rect = (150, 150, 350, 250 )
+        rect = (75, 75, int(2*image.shape[1]/3), int(2*image.shape[0]/3))
 
         cv2.grabCut(image, mask, rect, bgdModel, fgdModel, 5, cv2.GC_INIT_WITH_RECT)
         mask2 = np.where((mask == 2)|(mask == 0), 0, 1).astype('uint8')
