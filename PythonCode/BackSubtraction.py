@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Resize import ResizeImage
 
-class FGExtraction:
+class FGExtraction:#used foreground extraction to extract the target from backgrounds
     def ForeGround(self, image):
         mask = np.zeros(image.shape[:2], np.uint8)
 
