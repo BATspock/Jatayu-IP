@@ -6,7 +6,7 @@ class Preprocessing:
         self.im = image
 
     def GaussinaBlur(self):#blur or smoothening helps in denoising and improving edge detection
-        return(cv2.GaussianBlur(self.im, (5,5), 0))
+        return(cv2.GaussianBlur(self.im, (9,9), 0))
 
     def kmeans(self, K, img): #apply kmeans to find significant colors 5 clusters work good for our targets 
         Z = img.reshape((-1, 3))

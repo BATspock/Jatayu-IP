@@ -1,7 +1,7 @@
 import cv2
 import numpy as np 
 
-class CropOut:#contour is the contour list obtained after 
+class CropOut:#contour is the contour list obtained 
     def __init__(self, image, contour):
         self.im = image
         self.con = contour
@@ -19,7 +19,7 @@ class CropOut:#contour is the contour list obtained after
 
     def BigmakeRect(self):#return image with bounding rectangle along the biggest contour
         self.x, self.y, self.w, self.h = cv2.boundingRect(self.c)
-        #return(cv2.rectangle(self.im,(x,y),(x+w, y+h),(0,255,0),2))
+        #return(cv2.rectangle(self.im,(self.x,self.y),(self.x+self.w, self.y+self.h),(0,255,0),2))
         return(self.im[self.y:self.y+self.h, self.x:self.x+self.w])
     
      
