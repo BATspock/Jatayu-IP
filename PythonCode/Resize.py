@@ -4,7 +4,7 @@ class ResizeImage:
     def __init__(self, image):
         self.img = image
 
-    #method to rescale the image to 1/4 th without loss of color    
+    #method to rescale the image to 1/2 th without loss of color    
     def rescale(self):
         newx, newy = int(self.img.shape[1]/2),int(self.img.shape[0]/2)
         return(cv2.resize(self.img, (newx, newy)))

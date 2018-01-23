@@ -6,13 +6,13 @@ import cv2
 import numpy as np 
 import matplotlib.pyplot as plt 
 from Preprocess import Preprocessing
-from ContourOperations import Contours
+import ContourOperations as co
 from Resize import ResizeImage
 from CropOut import CropOut
 
 #import image
-im = cv2.imread('PICT_20180118_174935.JPG')
-#resize image to 1/4th to reduce the number of pixel
+im = cv2.imread('PICT_20180118_175217.JPG')
+#resize image to 1/2th to reduce the number of pixel
 resize = ResizeImage(im)
 target = resize.rescale()#for test images sent by the previous batch
 #target = resize.IncreaseSize()#for small size images
@@ -26,8 +26,7 @@ im1 = preprocessing.kmeans(8, im0)#apply kmeans to help remove background
 im2 = cv2.Canny(im1, 80, 255)
 
 #find coutours for other relevent operations 
-contours = Contours()
-l = contours.FindContours(im2)
+l = co.FindContours(im2)
 #make the rectanle around the biggest contour
 rect = CropOut(target, l)
 im3 = rect.BigmakeRect()
@@ -39,17 +38,19 @@ resize_later = ResizeImage(im3)
 final = resize_later.IncreaseSize()
 
 #apply kmeans to reduce the number of colors in final image
-im4 = preprocessing.kmeans(5, final)
+im4 = preprocessing.kmeans(4, final)
 
+#find edges in target image
+im5 = cv2.Canny(im4, 150, 255)
 
-im5 = cv2.Canny(im4, 80, 255)
+#find contours in the target image after canny
+l_target = co.FindContours(im5)
+co.drawContours(-1, l_target, final)
 
-
-
-cv2.imshow('kmeans', im1)
-cv2.imshow('target', target)
-cv2.imshow('thresh', im3)
-cv2.imshow('identify', im2)
+#cv2.imshow('kmeans', im1)
+#cv2.imshow('target', target)
+#cv2.imshow('thresh', im3)
+#cv2.imshow('identify', im2)
 cv2.imshow('final', im5)
 cv2.imshow('r', im4)
 cv2.imshow('new', final)
