@@ -30,6 +30,10 @@ def rotate_bound(image, angle):
     # perform the actual rotation and return the image
     return cv2.warpAffine(image, M, (nW, nH))
 
+
+############################################################
+# NOT USED 
+
 def rotate_box(bb, cx, cy, h, w, theta):
     new_bb = list(bb)
     for i,coord in enumerate(bb):
@@ -50,6 +54,7 @@ def rotate_box(bb, cx, cy, h, w, theta):
         calculated = np.dot(M,v)
         new_bb[i] = (calculated[0],calculated[1])
     return new_bb
+#################################################################################
 
 def ocr(targetImg):
     # convert to gray and threshold
