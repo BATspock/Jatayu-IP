@@ -12,3 +12,5 @@ update 4:
 removed foreground extraction and added new test images form new camera
 update 5:
 changes in contouroperations.py made fucntions, changes in value of Canny and cropout.py, use othermain.py 
+update 6:
+changes to detect outer contour 
