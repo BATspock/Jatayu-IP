@@ -1,10 +1,13 @@
 from PIL import Image
 import cv2
 import pytesseract as tsrct
+from tesserocr import PyTessBaseAPI, RIL, PyPageIterator, PyLTRResultIterator, iterate_level
 from Preprocess import Preprocessing
 import ContourOperations as contrOps
 from Resize import ResizeImage
 import numpy as np
+import matplotlib.pyplot as plt
+from time import sleep
 
 def rotate_bound(image, angle):
     # grab the dimensions of the image and then determine the
@@ -56,10 +59,53 @@ def rotate_box(bb, cx, cy, h, w, theta):
     return new_bb
 #################################################################################
 
+def rotate_and_detect(targetImg):
+
+    predList = []
+    scoreList = []
+    with PyTessBaseAPI() as api:
+        for theta in range(0, 0, 10):
+            rotatedImg = rotate_bound(targetImg, theta)
+            cv2.imwrite(str(theta)+".png", rotatedImg)
+            img = str(theta)+".png"
+            
+            api.SetImageFile(img)
+            api.SetPageSegMode(10)
+            api.Recognize()
+            
+            ri = api.GetIterator()
+            level = RIL.SYMBOL
+            for r in iterate_level(ri, level):
+                symbol = r.GetUTF8Text(level) 
+                conf = r.Confidence(level)
+                if symbol:
+                    print("symbol: {}, conf: {}".format(symbol, conf))
+        
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def ocr(targetImg):
     # convert to gray and threshold
     greyImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
     threshImg = cv2.threshold(greyImg, 0, 255, cv2.THRESH_BINARY|cv2.THRESH_OTSU)[1]
+    
     rows, cols, width = targetImg.shape
     
     contrList = contrOps.findContours(threshImg)
@@ -103,4 +149,4 @@ def ocr(targetImg):
     
     return angle
 
-print(ocr(cv2.imread("crop1.jpeg")))
+print(ocr(cv2.imread("v.jpg")))
