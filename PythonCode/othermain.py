@@ -13,7 +13,7 @@ from PIL import Image
 import pytesseract as tsrct
 
 #import image
-im = cv2.imread('/home/aditya/suas/PICT_20180118_175542.JPG')
+im = cv2.imread('test1.jpg')
 #resize image to 1/2 to reduce the number of pixel
 resize = ResizeImage(im)
 #target = resize.rescale()#for test images sent by the previous batch do 1/4th and new camera
@@ -38,7 +38,7 @@ im3 = rect.BigmakeRect()
 
 #increase size of cropped image
 resize_later = ResizeImage(im3)
-final = resize_later.IncreaseSize()
+final = resize_later.IncreaseSize(5)
 
 #apply kmeans to reduce the number of colors in final image
 im4 = preprocessing.kmeans(4, final)
@@ -48,7 +48,7 @@ imc = preprocessing.kmeans(2, final)
 im5 = cv2.Canny(im4, 150, 255)
 #find edges in the external contour
 imc1 = cv2.Canny(imc, 150, 255)
-
+cv2.imshow('imc1', imc1)
 #find contours in the target image after canny
 l_target = co.FindContours(imc1)
 conts = sorted(l_target, key = cv2.contourArea)
@@ -131,13 +131,38 @@ cv2.imwrite("blurTester.jpg", blur)
 text = tsrct.image_to_string(Image.open("blurTester.jpg"), config='-psm 10000')
 print(text)
 """
+
+# print(moment)
+
 cv2.drawContours(final, [screenCnt], -1, (0, 255, 0), 2)
-#cv2.imshow('kmeans', im1)
-#cv2.imshow('target', target)
-#cv2.imshow('thresh', im3)
-cv2.imshow('identify', imc)
-cv2.imshow('final',final)
-cv2.imshow('r', imc1)
-cv2.imshow('new', im5)
+print(screenCnt.shape)
+print(screenCnt)
+
+
+# cv2.imshow('kmeans', im1)
+# cv2.imshow('target', target)
+# cv2.imshow('thresh', im3)
+# cv2.imshow('identify', imc)
+
+# cv2.imshow('r', im4)
+# cv2.imshow('new', im5)
+
+
+M = cv2.moments(screenCnt)
+screenCnt = np.reshape(screenCnt, (screenCnt.shape[0], screenCnt.shape[2]))
+print(screenCnt)
+cv2.line(im4, (screenCnt[0][0], screenCnt[0][1]), (screenCnt[1][0], screenCnt[1][1]), (255, 0, 0), 2)
+# tan = -(screenCnt[0][0] - screenCnt[1][0])/(screenCnt[0][1] - screenCnt[1][1]) #-1/m
+# theta = np.arctan(tan)
+xmid = (screenCnt[0][0] + screenCnt[1][0])/2
+ymid = (screenCnt[0][1] + screenCnt[1][1])/2
+cx = int(M['m10']/M['m00'])
+cy = int(M['m01']/M['m00'])
+theta = np.arctan((cx-xmid)/(cy-ymid))
+x1 = xmid + 10*np.cos(theta)
+y1 = ymid + 10*np.sin(theta)
+cv2.line(im4, (int(xmid), int(ymid)), (int(cx), int(cy)), (255, 0, 0), 2)
+cv2.imshow('final',im4)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+

@@ -149,4 +149,4 @@ def ocr(targetImg):
     
     return angle
 
-print(ocr(cv2.imread("v.jpg")))
+print(ocr(cv2.imread("im15.jpg")))
