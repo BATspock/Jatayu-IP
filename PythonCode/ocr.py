@@ -61,29 +61,47 @@ def rotate_box(bb, cx, cy, h, w, theta):
 
 def rotate_and_detect(targetImg):
 
-    predList = []
-    scoreList = []
     with PyTessBaseAPI() as api:
-        for theta in range(0, 0, 10):
-            rotatedImg = rotate_bound(targetImg, theta)
-            cv2.imwrite(str(theta)+".png", rotatedImg)
-            img = str(theta)+".png"
-            
-            api.SetImageFile(img)
-            api.SetPageSegMode(10)
-            api.Recognize()
-            
-            ri = api.GetIterator()
-            level = RIL.SYMBOL
-            for r in iterate_level(ri, level):
-                symbol = r.GetUTF8Text(level) 
+    for theta in range(0, 360, 10):
+        print(theta)
+        img = rotate_bound(targetImg, theta)
+        cv2.imwrite(str(theta)+'.png', img)
+        api.SetImage(Image.fromarray(img))
+    #     api.SetVariable("save_blob_choices", "T")
+        api.Recognize()
+        api.SetPageSegMode(10)
+        ri = api.GetIterator()
+        level = RIL.SYMBOL
+        for r in iterate_level(ri, level):
+            try:
+                symbol = r.GetUTF8Text(level)  # r == ri
                 conf = r.Confidence(level)
-                if symbol:
-                    print("symbol: {}, conf: {}".format(symbol, conf))
-        
+            except (RuntimeError):
+                print("lol")
+                pass
+            if symbol:
+                print(symbol)
+                print('symbol {}, conf: {}'.format(symbol, conf))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+'''
+def rotate_and_detect(img):
+    with PyTessBaseAPI() as api:
+        api.SetVariable("save_blob_choices", "T")
+        api.Recognize()
+        for theta in range(0,360,10):
+            img1 = rotate_bound(img, theta)
+            api.SetImage(Image.fromarray(img1))
+            ri = api.GetIterator()
+            level = RIL.SYMBOL
+            for r in iterate_level(ri, level):
+                symbol = r.GetUTF8Text(level)  # r == ri
+                conf = r.Confidence(level)
+                if symbol:
+                    print('symbol {}, conf: {}'.format(symbol, conf)),
+
+'''
 
 
 
@@ -97,10 +115,7 @@ def rotate_and_detect(targetImg):
 
 
 
-
-
-
-
+'''
 def ocr(targetImg):
     # convert to gray and threshold
     greyImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
@@ -108,7 +123,7 @@ def ocr(targetImg):
     
     rows, cols, width = targetImg.shape
     
-    contrList = contrOps.findContours(threshImg)
+    contrList = contrOps.FindContours(threshImg)
     contrList.sort(key = lambda s: -len(s))
     top3 = contrList[0:2]
     predList = []
@@ -148,5 +163,6 @@ def ocr(targetImg):
         i = i+1
     
     return angle
+'''
 
-print(ocr(cv2.imread("im15.jpg")))
+print(rotate_and_detect(cv2.imread("im15.jpg")))
