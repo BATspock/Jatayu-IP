@@ -62,26 +62,26 @@ def rotate_box(bb, cx, cy, h, w, theta):
 def rotate_and_detect(targetImg):
 
     with PyTessBaseAPI() as api:
-    for theta in range(0, 360, 10):
-        print(theta)
-        img = rotate_bound(targetImg, theta)
-        cv2.imwrite(str(theta)+'.png', img)
-        api.SetImage(Image.fromarray(img))
-    #     api.SetVariable("save_blob_choices", "T")
-        api.Recognize()
-        api.SetPageSegMode(10)
-        ri = api.GetIterator()
-        level = RIL.SYMBOL
-        for r in iterate_level(ri, level):
-            try:
-                symbol = r.GetUTF8Text(level)  # r == ri
-                conf = r.Confidence(level)
-            except (RuntimeError):
-                print("lol")
-                pass
-            if symbol:
-                print(symbol)
-                print('symbol {}, conf: {}'.format(symbol, conf))
+        for theta in range(0, 360, 10):
+            print(theta)
+            img = rotate_bound(targetImg, theta)
+            cv2.imwrite(str(theta)+'.png', img)
+            api.SetImage(Image.fromarray(img))
+        #     api.SetVariable("save_blob_choices", "T")
+            api.Recognize()
+            api.SetPageSegMode(10)
+            ri = api.GetIterator()
+            level = RIL.SYMBOL
+            for r in iterate_level(ri, level):
+                try:
+                    symbol = r.GetUTF8Text(level)  # r == ri
+                    conf = r.Confidence(level)
+                    if symbol:
+                        print('symbol {}, conf: {}'.format(symbol, conf))
+                except (RuntimeError):
+                    print("lol")
+                    pass
+                
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -165,4 +165,4 @@ def ocr(targetImg):
     return angle
 '''
 
-print(rotate_and_detect(cv2.imread("im15.jpg")))
+print(rotate_and_detect(cv2.imread("hola.jpg")))

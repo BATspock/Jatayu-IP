@@ -24,4 +24,4 @@ class CropOut:#contour is the contour list obtained
         #return(cv2.rectangle(self.im,(self.x,self.y),(self.x+self.w, self.y+self.h),(0,255,0),2))
         return(self.im[self.y-5:self.y+self.h+5, self.x-5:self.x+self.w+5])
     
-     
+    

@@ -11,11 +11,11 @@ from Resize import ResizeImage
 from CropOut import CropOut
 from PIL import Image
 import pytesseract as tsrct
-from BackSubtraction import FGExtraction
+# from BackSubtraction import FGExtraction
 
 
 #import image
-im = cv2.imread('/home/aditya/suas/PICT_20180212_173618.JPG')
+im = cv2.imread('PICT_20180212_173550.JPG')
 #resize image to 1/2 to reduce the number of pixel
 resize = ResizeImage(im)
 target = resize.rescale()#for test images sent by the previous batch do 1/4th and new camera
