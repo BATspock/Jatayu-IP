@@ -11,11 +11,11 @@ from Resize import ResizeImage
 from CropOut import CropOut
 from PIL import Image
 import pytesseract as tsrct
-# from BackSubtraction import FGExtraction
+from BackSubtraction import FGExtraction
 
 
 #import image
-im = cv2.imread('PICT_20180212_173550.JPG')
+im = cv2.imread('/home/aditya/suas/PICT_20180212_173407.JPG')
 #resize image to 1/2 to reduce the number of pixel
 resize = ResizeImage(im)
 target = resize.rescale()#for test images sent by the previous batch do 1/4th and new camera
@@ -57,7 +57,7 @@ l_target = co.FindContours(im5)
 
 conts_1 = sorted(l_target, key = cv2.contourArea)
 
-conts = conts_1[::-1][:4]
+conts = conts_1[::-1][:3]
 
 '''
 -circle
@@ -75,10 +75,12 @@ trapezoid
 -cross
 '''
 
-#detect shapes using number contour  
+#detect shapes using number contour 
+i = -1 
 for c in conts:
+    i += 1
     peri = cv2.arcLength(c, True)
-    approx = cv2.approxPolyDP(c, 0.015*peri, True)
+    approx = cv2.approxPolyDP(c, 0.02*peri, True)
     if (len(approx)==6):
         screenCnt = approx
         print('hexagon')
@@ -117,16 +119,42 @@ for c in conts:
         screenCnt = approx
         break
 
-#print(screenCnt)
+
 cv2.drawContours(final, [screenCnt], -1, (0, 255, 0), 2)
 
+#mask image to get only inside of the contour
+im4 = cv2.cvtColor(im4, cv2.COLOR_BGR2GRAY)
+mask = np.zeros_like(im4)
+cv2.drawContours(mask, conts, i, 255, -1)
+out = np.zeros_like(im4)
+out[mask == 255] = im4[mask == 255]
+cv2.imshow('out', out)
+
+newout = cv2.Canny(out, 50, 200)
+contsL = co.FindContours(newout)
+contsLnew = sorted(contsL, key= cv2.contourArea)
+l= list (cv2.contourArea(c) for c in contsLnew)
+print(l)
+contsnewreq = []
+for c in contsLnew:
+    if cv2.contourArea(c)>=200:
+        contsnewreq.append(c)
+print(len(contsnewreq))
+
+mask1 = np.zeros_like(im4)
+cv2.drawContours(mask1, contsnewreq, 0, 255, -1)
+out1 = np.zeros_like(im4)
+out1[mask1 == 255] = im4[mask1 == 255]
+cv2.imshow('newoutletter', out1)
+
+'''
 req_conts=[]
 for c in conts_1:
     if cv2.contourArea(c)>=100:
         req_conts.append(c)
 
 
-contsAreanew = list(cv2.contourArea(c) for c in req_conts)
+#contsAreanew = list(cv2.contourArea(c) for c in req_conts)
 from CropOut import innerRect
 imsomething = innerRect(im4, req_conts[0])
 cv2.imshow('letter', imsomething)
@@ -143,7 +171,7 @@ for color in colors[0]:
     cv2.imwrite(str(img_number)+".jpg",split_image)
     img_number+=1
 
-'''
+
 plt.hist(gray.ravel(),256,[0,256])
 plt.savefig('plt')
 plt.show()
@@ -160,7 +188,8 @@ cv2.imwrite('finalkmeans.jpg', im6_1)
 #cv2.imwrite('kmeansimg.jpg', im4)
 #cv2.imshow('target', target)
 #cv2.imshow('thresh', im3)
-cv2.imshow('identify', imc)
+cv2.imshow('latest', newout)
+#cv2.imshow('identify', im5)
 cv2.imshow('final',final)
 #cv2.imshow('r', im3)
 cv2.imshow('new', im4)
