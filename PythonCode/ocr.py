@@ -165,4 +165,4 @@ def ocr(targetImg):
     return angle
 '''
 
-print(rotate_and_detect(cv2.imread("hola.jpg")))
+print(rotate_and_detect(cv2.imread("Screenshot from 2018-02-13 18-46-07.png")))

@@ -20,3 +20,12 @@ class Preprocessing:
     def threshold(self, im):#threshold to remove background and and improve contour detection the value of 180 and 255 was found by trial and error work pretty sweet
         ret, thresh = cv2.threshold(im, 180, 255, 0)
         return(ret, thresh)
+
+def kmeans(K, img): #apply kmeans to find significant colors 5 clusters work good for our targets 
+        Z = img.reshape((-1, 3))
+        Z = np.float32(Z)
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+        ret, label, center = cv2.kmeans(Z, K,None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+        center = np.uint8(center)
+        res = center[label.flatten()]
+        return(res.reshape((img.shape)))
