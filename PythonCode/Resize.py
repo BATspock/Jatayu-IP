@@ -10,6 +10,6 @@ class ResizeImage:
         return(cv2.resize(self.img, (newx, newy)))
         
 
-    def IncreaseSize(self, k):#incrase size of image by 5 times
-        newx, newy = int(k*self.img.shape[1]),int(k*self.img.shape[0])
+    def IncreaseSize(self):#incrase size of image by 5 times
+        newx, newy = int(8*self.img.shape[1]),int(8*self.img.shape[0])
         return(cv2.resize(self.img, (newx, newy)))

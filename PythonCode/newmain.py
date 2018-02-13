@@ -13,8 +13,9 @@ from PIL import Image
 import pytesseract as tsrct
 from BackSubtraction import FGExtraction
 
+
 #import image
-im = cv2.imread('/home/aditya/suas/PICT_20180212_173815.JPG')
+im = cv2.imread('/home/aditya/suas/PICT_20180212_173618.JPG')
 #resize image to 1/2 to reduce the number of pixel
 resize = ResizeImage(im)
 target = resize.rescale()#for test images sent by the previous batch do 1/4th and new camera
@@ -119,40 +120,6 @@ for c in conts:
 #print(screenCnt)
 cv2.drawContours(final, [screenCnt], -1, (0, 255, 0), 2)
 
-
-M = cv2.moments(screenCnt)
-#im4 = cv2.cvtColor(im4, cv2.COLOR_BGR2GRAY)
-screenCnt = np.reshape(screenCnt, (screenCnt.shape[0], screenCnt.shape[2]))
-#print(screenCnt)
-#cv2.line(im4, (screenCnt[0][0], screenCnt[0][1]), (screenCnt[1][0], screenCnt[1][1]), (255, 0, 0), 2)
-# tan = -(screenCnt[0][0] - screenCnt[1][0])/(screenCnt[0][1] - screenCnt[1][1]) #-1/m
-# theta = np.arctan(tan)
-xmid = (screenCnt[0][0] + screenCnt[1][0])/2
-ymid = (screenCnt[0][1] + screenCnt[1][1])/2
-cx = int(M['m10']/M['m00'])
-cy = int(M['m01']/M['m00'])
-theta = np.arctan((cx-xmid)/(cy-ymid))
-x1 = xmid + 10*np.cos(theta)
-y1 = ymid + 10*np.sin(theta)
-
-
-req_x, req_y = (int((xmid + 10*cx)/(11)),int((ymid + 10*cy)/(11)))
-#print(im4[int(M['m10']/M['m00']), int(M['m01']/M['m00'])])
-print(im4[req_x, req_y])
-#cv2.line(im4, (int(xmid), int(ymid)), (int(req_x), int(req_y)), (255, 0, 0), 2)
-out_x, out_y = (int((11*xmid - 3*cx )/8), int((11*ymid - 3*cy)/8))
-print(im4[out_x, out_y])
-
-#print(im4[int(M['m10']/M['m00']), int(M['m01']/M['m00'])])
-
-#mask = cv2.inRange(im4, im4[int(M['m10']/M['m00']), int(M['m01']/M['m00'])], im4[int(M['m10']/M['m00']), int(M['m01']/M['m00'])])
-print(np.unique(im4))
-im4[im4 == im4[req_x, req_y]] = 0
-im4[im4 == im4[out_x, out_y]] = 0
-im4[im4!= 0] = 255
-output = im4
-
-
 req_conts=[]
 for c in conts_1:
     if cv2.contourArea(c)>=100:
@@ -160,14 +127,27 @@ for c in conts_1:
 
 
 contsAreanew = list(cv2.contourArea(c) for c in req_conts)
-
-#print(contsArea)
-#print(len(l_target))
-#co.drawContours(0, req_conts, im4)
-
 from CropOut import innerRect
 imsomething = innerRect(im4, req_conts[0])
 cv2.imshow('letter', imsomething)
+
+
+gray = cv2.cvtColor(imsomething, cv2.COLOR_BGR2GRAY)
+hist = cv2.calcHist([gray],[0],None,[256],[0,256])
+colors = np.where(hist>100)
+img_number = 0
+for color in colors[0]:
+    print(color)
+    split_image = imsomething.copy()
+    split_image[np.where(gray != color)] = 0
+    cv2.imwrite(str(img_number)+".jpg",split_image)
+    img_number+=1
+
+'''
+plt.hist(gray.ravel(),256,[0,256])
+plt.savefig('plt')
+plt.show()
+
 
 
 # cv2.imshow('mask', np.hstack([im4, output]))
@@ -176,11 +156,11 @@ im6 = cv2.blur(output,(5,5))
 im6_1 = cv2.blur(im6, (5,5))
 cv2.imshow('kmeans', im6_1)
 cv2.imwrite('finalkmeans.jpg', im6_1)
-
+'''
 #cv2.imwrite('kmeansimg.jpg', im4)
 #cv2.imshow('target', target)
 #cv2.imshow('thresh', im3)
-#cv2.imshow('identify', imc)
+cv2.imshow('identify', imc)
 cv2.imshow('final',final)
 #cv2.imshow('r', im3)
 cv2.imshow('new', im4)
