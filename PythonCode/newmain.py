@@ -15,7 +15,7 @@ import pytesseract as tsrct
 
 
 #import image
-im = cv2.imread('PICT_20180212_173550.JPG')
+im = cv2.imread('0032633.jpg')
 #resize image to 1/2 to reduce the number of pixel
 resize = ResizeImage(im)
 target = resize.rescale()#for test images sent by the previous batch do 1/4th and new camera
