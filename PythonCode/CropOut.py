@@ -22,6 +22,11 @@ class CropOut:#contour is the contour list obtained
     def BigmakeRect(self):#return image with bounding rectangle along the biggest contour
         self.x, self.y, self.w, self.h = cv2.boundingRect(self.c)
         #return(cv2.rectangle(self.im,(self.x,self.y),(self.x+self.w, self.y+self.h),(0,255,0),2))
-        return(self.im[self.y-5:self.y+self.h+5, self.x-5:self.x+self.w+5])
+        return(self.im[self.y-7:self.y+self.h+7, self.x-7:self.x+self.w+7])
     
-     
+    
+    
+def innerRect(image, contour):
+        x,y,w,h = cv2.boundingRect(contour)
+        #return(cv2.rectangle(self.im,(self.x,self.y),(self.x+self.w, self.y+self.h),(0,255,0),2))
+        return(image[y:y+h, x:x+w])
